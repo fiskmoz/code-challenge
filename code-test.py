@@ -9,14 +9,15 @@ query = json.loads(open('query.json').read())
 response = requests.post("http://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0104/ME0104D/ME0104T4", json=query)
 response_json = json.loads(response.content.decode('utf-8-sig'))
 
-### select which years to check results from (just add for example 2018 once its avalible in the api). ###
+### find all unique years to check results from. ###
 possible_years = []
 for data in response_json['data']:
     if  data['key'][1] in possible_years:
         continue
     possible_years.append(data['key'][1])
-
 possible_years.sort()
+
+### initialize help arrays depending on no. of election years ###
 highest_values = ["0"] * len(possible_years)
 region_codes_with_highest = [""] * len(possible_years)
 region_names_with_highest = [""] * len(possible_years)
