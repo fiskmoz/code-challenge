@@ -66,5 +66,4 @@ for with_highest, region_code in enumerate(region_codes_with_highest):
 colorama.init()
 for index, year in enumerate(possible_years): 
     print(colored("["+year+"]", 'cyan') + colored(region_names_with_highest[index], 'green') + "  " + colored(highest_values[index] + "%  ", 'yellow'))
-
-print(region_codes_with_highest)
+    
