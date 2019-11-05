@@ -28,6 +28,10 @@ for data in response_json['data']:
         if float(data['values'][0]) > float(highest_values[index]):
             highest_values[index] = data['values'][0]
             region_codes_with_highest[index] = data['key'][0]
+        if float(data['values'][0]) == float(highest_values[index]):
+            if str(region_codes_with_highest[index]) == data['key'][0]:
+                continue
+            region_codes_with_highest[index] = str(region_codes_with_highest[index]) + ',' + data['key'][0]
         break
 
 ### make a request to get the region code to region name mapping. ###
@@ -42,12 +46,16 @@ for mapping in response_json['variables']:
 
 ### map the region codes to region names and append the names array. ###
 for with_highest, region_code in enumerate(region_codes_with_highest):
-    for json_index, region_code_json in enumerate(name_mapping['values']):
-        if not region_code == region_code_json:
-            continue
-        region_names_with_highest[with_highest] = name_mapping['valueTexts'][json_index]
-        break
+    region_codes = region_code.split(',')
+    for region_code_multiple in region_codes:
+        for json_index, region_code_json in enumerate(name_mapping['values']):
+            if not region_code_multiple == region_code_json:
+                continue
+            region_names_with_highest[with_highest] = region_names_with_highest[with_highest] + "  " + name_mapping['valueTexts'][json_index]
+            break
 
 ### print with fun colors.  :) ###  
 for index, year in enumerate(possible_years): 
-    print(colored("["+year+"]", 'cyan') + " " + colored(region_names_with_highest[index]+" : ", 'green') + colored(highest_values[index] + "% ", 'yellow'))
+    print(colored("["+year+"]", 'cyan') + colored(region_names_with_highest[index], 'green') + "  " + colored(highest_values[index] + "%  ", 'yellow'))
+
+print(region_codes_with_highest)
