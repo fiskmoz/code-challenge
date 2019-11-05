@@ -1,18 +1,26 @@
 import requests
 import json
 from termcolor import colored
-
-### select which years to check results from (just add for example 2018 once its avalible in the api). ###
-possible_years = ["1973", "1976", "1979", "1982", "1985", "1988", "1991", "1994", "1998", "2002", "2006", "2010", "2014"]
-highest_values = ["0"] * len(possible_years)
-region_codes_with_highest = [""] * len(possible_years)
-region_names_with_highest = [""] * len(possible_years)
+import colorama
 
 ### make requests to get percent values from the scb API. the 3 values that are important are [region , year, value] ###
 session = requests.Session()
 query = json.loads(open('query.json').read())
 response = requests.post("http://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0104/ME0104D/ME0104T4", json=query)
 response_json = json.loads(response.content.decode('utf-8-sig'))
+
+### find all unique years to check results from. ###
+possible_years = []
+for data in response_json['data']:
+    if  data['key'][1] in possible_years:
+        continue
+    possible_years.append(data['key'][1])
+possible_years.sort()
+
+### initialize help arrays depending on no. of election years ###
+highest_values = ["0"] * len(possible_years)
+region_codes_with_highest = [""] * len(possible_years)
+region_names_with_highest = [""] * len(possible_years)
 
 ### enumerate all region, year, value pairs. ###
 ### store the highest value for a year and the corresponding region when found. ###
@@ -55,6 +63,7 @@ for with_highest, region_code in enumerate(region_codes_with_highest):
             break
 
 ### print with fun colors.  :) ###  
+colorama.init()
 for index, year in enumerate(possible_years): 
     print(colored("["+year+"]", 'cyan') + colored(region_names_with_highest[index], 'green') + "  " + colored(highest_values[index] + "%  ", 'yellow'))
 
